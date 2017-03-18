@@ -3,10 +3,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-  <Button
+    <Button
         android:text="Scan QR"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btnScanQR" />
-
-  </LinearLayout>
+    <TextView
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView1" />
+</LinearLayout>

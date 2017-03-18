@@ -42,11 +42,14 @@ namespace QrForEVent
             var result = await scanner.Scan(options);  
             if (result != null)
             {
+                
                 string qrData = result.Text;
-                string[] values = qrData.Split(',').ToArray();
+                string str = qrData.Substring(0, 7);
 
-                if (values[0] == "contact")
+                if(str == "contact")
                 {
+
+                    string[] values = qrData.Split(',').ToArray();
                     String displayName = values[1];
                     String mobileNumber = values[2];
                     String email = values[3];
@@ -54,16 +57,12 @@ namespace QrForEVent
                 }
                 else
                 {
-                    if (values[0] == "event")
-                    {
-                        DateTime startDate = Convert.ToDateTime(values[4]);
-                        DateTime endDate = Convert.ToDateTime(values[5]);
-                        AddCalenderEvent(values[2], values[3], startDate, endDate);
-
-                        var uri = Android.Net.Uri.Parse(qrData);
-                        var intent = new Intent(Intent.ActionView, uri);
-                        StartActivity(intent);
-                    }
+                       // DateTime startDate = Convert.ToDateTime(values[4]);
+                        //DateTime endDate = Convert.ToDateTime(values[5]);
+                        //AddCalenderEvent(values[2], values[3], startDate, endDate);
+                      var uri = Android.Net.Uri.Parse(qrData);
+                      var intent = new Intent(Intent.ActionView, uri);
+                      StartActivity(intent);
                 }
             }
 
