@@ -19,7 +19,9 @@ namespace QrForEVent
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
+
             SetContentView(Resource.Layout.Main);
+
             Button qr = FindViewById<Button>(Resource.Id.btnScanQR);
             qr.Click += delegate
             {
@@ -48,12 +50,9 @@ namespace QrForEVent
 
                 if(str == "contact")
                 {
-
-                    string[] values = qrData.Split(',').ToArray();
-                    String displayName = values[1];
-                    String mobileNumber = values[2];
-                    String email = values[3];
-                    AddContact(displayName, mobileNumber, email);
+                    var contactActivity = new Intent(this, typeof(Contact));
+                    contactActivity.PutExtra("qrData", qrData);
+                    StartActivity(contactActivity);
                 }
                 else
                 {
@@ -67,52 +66,7 @@ namespace QrForEVent
             }
 
         }
-        public void AddContact(String displayName,string mobileNumber, String email)
-        {
-
-            List<ContentProviderOperation> ops = new List<ContentProviderOperation>();
-
-            int rawContactInsertIndex = ops.Count;
-
-            ops.Add(ContentProviderOperation.NewInsert(Android.Provider.ContactsContract.RawContacts.ContentUri)
-                 .WithValue(Android.Provider.ContactsContract.RawContacts.InterfaceConsts.AccountType, null)
-                 .WithValue(Android.Provider.ContactsContract.RawContacts.InterfaceConsts.AccountName, null).Build());
-
-            //Display Name
-
-            ops.Add(ContentProviderOperation
-                 .NewInsert(Android.Provider.ContactsContract.Data.ContentUri)
-                 .WithValueBackReference(Android.Provider.ContactsContract.Data.InterfaceConsts.RawContactId, rawContactInsertIndex)
-                 .WithValue(Android.Provider.ContactsContract.Data.InterfaceConsts.Mimetype, Android.Provider.ContactsContract.CommonDataKinds.StructuredName.ContentItemType)
-                 .WithValue(Android.Provider.ContactsContract.CommonDataKinds.StructuredName.DisplayName, displayName).Build()); // Name of the person
-
-            //mobile number
-
-            ops.Add(ContentProviderOperation
-                 .NewInsert(Android.Provider.ContactsContract.Data.ContentUri)
-                 .WithValueBackReference(ContactsContract.Data.InterfaceConsts.RawContactId, rawContactInsertIndex)
-                 .WithValue(Android.Provider.ContactsContract.Data.InterfaceConsts.Mimetype, Android.Provider.ContactsContract.CommonDataKinds.Phone.ContentItemType)
-                 .WithValue(Android.Provider.ContactsContract.CommonDataKinds.Phone.Number, mobileNumber) // Number of the person
-                 .WithValue(Android.Provider.ContactsContract.CommonDataKinds.Phone.InterfaceConsts.Type, "mobile").Build()); // Type of mobile number
-
-            //email Address
-            ops.Add(ContentProviderOperation
-                .NewInsert(ContactsContract.Data.ContentUri)
-                .WithValueBackReference(ContactsContract.Data.InterfaceConsts.RawContactId, rawContactInsertIndex)
-                .WithValue(Android.Provider.ContactsContract.Data.InterfaceConsts.Mimetype, ContactsContract.CommonDataKinds.Email.ContentItemType)
-                .WithValue(Android.Provider.ContactsContract.CommonDataKinds.Email.Address, email).Build()); // Email Address
-            //.WithValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
-
-            // Asking the Contact provider to create a new contact                 
-            try
-            {
-                ContentResolver.ApplyBatch(ContactsContract.Authority, ops);
-            }
-            catch (Exception ex)
-            {
-                Toast.MakeText(this, "Exception: " + ex.Message, ToastLength.Long).Show();
-            }
-        }
+        
         public void AddCalenderEvent(string title, string location,DateTime startDate, DateTime endDate)
         {
             int sdy = startDate.Day;
